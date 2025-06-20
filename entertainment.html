@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>teams</title>
+            <style>
+              body {
+            background-image: url(golfblauw.jpg);
+            background-size: 1920px;
+            background-repeat: no-repeat;
+             }
+            </style>
+            <link rel="icon" type="image" href="teams..png">
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+    </head>
+    <body> 
+      <nav style="width:100%; background:#000000; padding:10px 0; position:fixed; top:0; left:0; z-index:100;">
+        <div style="width:80%; margin:0 auto; display:flex; gap:30px;">
+           <a href="secret2.html" style="color:rgb(0, 0, 0); text-decoration:none;">nn</a>
+            <a href="site.html" style="color:white; text-decoration:none;">Home</a>
+            <a href="hobbies.html" style="color:white; text-decoration:none;">Hobbies</a>
+            <a href="school.html" style="color:white; text-decoration:none;">School</a>
+            <a href="entertainment.html" style="color:white; text-decoration:none;font-weight:bold;">Entertainmant</a>
+            <br>
+        </div>
+        </nav>
+        
+        <div id="minesweeper" style="margin:60px auto 0 auto; width:fit-content;">
+    <h2 style="color:white; text-align:center;">Minesweeper</h2>
+    <button id="restartMinesweeper" style="margin-bottom:10px;">Restart</button>
+    <table id="minesweeperTable" style="border-collapse:collapse; background:#222;"></table>
+    <p id="minesweeperStatus" style="color:white; text-align:center;"></p>
+</div>
+<script>
+const SIZE = 20;
+const MINES = 40;
+let board, revealed, gameOver;
+
+function initMinesweeper() {
+    board = Array.from({length: SIZE}, () => Array(SIZE).fill(0));
+    revealed = Array.from({length: SIZE}, () => Array(SIZE).fill(false));
+    gameOver = false;
+
+    let placed = 0;
+    while (placed < MINES) {
+        let r = Math.floor(Math.random() * SIZE);
+        let c = Math.floor(Math.random() * SIZE);
+        if (board[r][c] !== 'M') {
+            board[r][c] = 'M';
+            placed++;
+        }
+    }
+    for (let i = 0; i < SIZE; i++) {
+        for (let j = 0; j < SIZE; j++) {
+            if (board[i][j] === 'M') continue;
+            let count = 0;
+            for (let dr = -1; dr <= 1; dr++) {
+                for (let dc = -1; dc <= 1; dc++) {
+                    let ni = i + dr, nj = j + dc;
+                    if (ni >= 0 && ni < SIZE && nj >= 0 && nj < SIZE && board[ni][nj] === 'M') count++;
+                }
+            }
+            board[i][j] = count;
+        }
+    }
+    drawMinesweeper();
+    document.getElementById('minesweeperStatus').textContent = '';
+}
+
+function drawMinesweeper() {
+    const table = document.getElementById('minesweeperTable');
+    table.innerHTML = '';
+    for (let i = 0; i < SIZE; i++) {
+        const tr = document.createElement('tr');
+        for (let j = 0; j < SIZE; j++) {
+            const td = document.createElement('td');
+            td.style.width = '32px';
+            td.style.height = '32px';
+            td.style.textAlign = 'center';
+            td.style.fontSize = '20px';
+            td.style.color = 'white';
+            td.style.border = '1px solid #555';
+            td.style.background = revealed[i][j] ? '#444' : '#888';
+            td.style.cursor = gameOver ? 'default' : 'pointer';
+            if (revealed[i][j]) {
+                if (board[i][j] === 'M') {
+                    td.textContent = '💣';
+                    td.style.background = '#c00';
+                } else if (board[i][j] > 0) {
+                    td.textContent = board[i][j];
+                }
+            }
+            td.onclick = () => {
+                if (!revealed[i][j] && !gameOver) revealCell(i, j);
+            };
+            tr.appendChild(td);
+        }
+        table.appendChild(tr);
+    }
+}
+
+function revealCell(i, j) {
+    if (revealed[i][j]) return;
+    revealed[i][j] = true;
+    if (board[i][j] === 'M') {
+        gameOver = true;
+        revealAll();
+        document.getElementById('minesweeperStatus').textContent = 'Game Over! 💥';
+    } else if (board[i][j] === 0) {
+        // Reveal neighbors
+        for (let dr = -1; dr <= 1; dr++) {
+            for (let dc = -1; dc <= 1; dc++) {
+                let ni = i + dr, nj = j + dc;
+                if (ni >= 0 && ni < SIZE && nj >= 0 && nj < SIZE) {
+                    if (!revealed[ni][nj]) revealCell(ni, nj);
+                }
+            }
+        }
+    }
+    drawMinesweeper();
+    checkWin();
+}
+
+function revealAll() {
+    for (let i = 0; i < SIZE; i++)
+        for (let j = 0; j < SIZE; j++)
+            revealed[i][j] = true;
+    drawMinesweeper();
+}
+
+function checkWin() {
+    let safe = 0;
+    for (let i = 0; i < SIZE; i++)
+        for (let j = 0; j < SIZE; j++)
+            if (!revealed[i][j] && board[i][j] !== 'M') safe++;
+    if (safe === 0 && !gameOver) {
+        gameOver = true;
+        document.getElementById('minesweeperStatus').textContent = 'You Win! 🎉';
+        revealAll();
+    }
+}
+
+document.getElementById('restartMinesweeper').onclick = initMinesweeper;
+initMinesweeper();
+    
+</script>
+  <p style="color: white;position: center" > this game is sponsored by ai </p>
+    </body>
+</html>
+<style>
+    p{
+        color: white;
+        text-align: center;
+        font-family: 'Nunito', sans-serif;
+    }
+</style>
